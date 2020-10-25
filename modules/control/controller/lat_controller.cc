@@ -210,16 +210,16 @@ Status LatController::Init(std::shared_ptr<DependencyInjector> injector,
    0.0, ((lr * cr - lf * cf) / i_z) / v, (l_f * c_f - l_r * c_r) / i_z,
    (-1.0 * (l_f^2 * c_f + l_r^2 * c_r) / i_z) / v;]
   */
-  matrix_a_(0, 1) = 0910-question;
-  matrix_a_(1, 2) = 0910-question;
-  matrix_a_(2, 3) = 0910-question;
-  matrix_a_(3, 2) = 0910-question;
+  matrix_a_(0, 1) = 1;
+  matrix_a_(1, 2) = (cf_+cr_)/mass_;
+  matrix_a_(2, 3) = 1;
+  matrix_a_(3, 2) = (cf_*lf_-cr_*lr_)/iz_;
 
   matrix_a_coeff_ = Matrix::Zero(matrix_size, matrix_size);
-  matrix_a_coeff_(1, 1) = 0910-question;
-  matrix_a_coeff_(1, 3) = 0910-question;
-  matrix_a_coeff_(3, 1) = 0910-question;
-  matrix_a_coeff_(3, 3) = 0910-question;
+  matrix_a_coeff_(1, 1) = -(cf_+cr_)/mass_;
+  matrix_a_coeff_(1, 3) = (-cf_*lf_+cr_*lr_)/mass_;
+  matrix_a_coeff_(3, 1) = -(cf_*lf_-cr_*lr_)/iz_;
+  matrix_a_coeff_(3, 3) = -(cf_*lf_^2+cr_*lr_^2)/iz_;
 
   /*
   b = [0.0, c_f / m, 0.0, l_f * c_f / i_z]^T
@@ -482,13 +482,13 @@ Status LatController::ComputeControlCommand(
     matrix_q_updated_(2, 2) =
         matrix_q_(2, 2) * heading_err_interpolation_->Interpolate(
                               std::fabs(vehicle_state->linear_velocity()));
-    common::math::SolveLQRProblem(0910-question, 0910-question, 0910-question,
-                                  0910-question, 0910-question, 0910-question,
-                                  0910-question);
+    common::math::SolveLQRProblem(matrix_adc_, matrix_bdc_, matrix_q_,
+                                  matrix_r_, lqr_eps_, lqr_max_iteration_,
+                                  &matrix_k_);
   } else {
-    common::math::SolveLQRProblem(0910-question, 0910-question, 0910-question,
-                                  0910-question, 0910-question, 0910-question,
-                                  0910-question);
+    common::math::SolveLQRProblem(matrix_adc_, matrix_bdc_, matrix_q_,
+                                  matrix_r_, lqr_eps_, lqr_max_iteration_,
+                                  &matrix_k_);
   }
 
   // feedback = - K * state
