@@ -219,7 +219,7 @@ Status LatController::Init(std::shared_ptr<DependencyInjector> injector,
   matrix_a_coeff_(1, 1) = -(cf_+cr_)/mass_;
   matrix_a_coeff_(1, 3) = (-cf_*lf_+cr_*lr_)/mass_;
   matrix_a_coeff_(3, 1) = -(cf_*lf_-cr_*lr_)/iz_;
-  matrix_a_coeff_(3, 3) = -(cf_*lf_^2+cr_*lr_^2)/iz_;
+  matrix_a_coeff_(3, 3) = -(cf_*lf_^(2.0)+cr_*lr_^(2.0))/iz_;
 
   /*
   b = [0.0, c_f / m, 0.0, l_f * c_f / i_z]^T
